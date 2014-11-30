@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.pegdown.Extensions;
 import org.pegdown.PegDownProcessor;
 
 public class MarkdownTool {
@@ -61,7 +62,7 @@ public class MarkdownTool {
 		InputStream is = new FileInputStream(filename);
 		StringBuilder sb = readUTF(is);
 		is.close();
-		PegDownProcessor pdp = new PegDownProcessor();
+		PegDownProcessor pdp = new PegDownProcessor(Extensions.AUTOLINKS | Extensions.FENCED_CODE_BLOCKS | Extensions.STRIKETHROUGH | Extensions.TABLES);
 		String result = pdp.markdownToHtml(sb.toString());
 		return result;
 	}

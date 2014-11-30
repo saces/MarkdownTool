@@ -1,6 +1,6 @@
 # MarkdownTool
 
-*A simple tool for generating html files from (github flovered) markdown.*
+*A simple tool for generating html files from (github flavored) markdown.*
 
 ## How to build
 
