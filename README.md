@@ -14,12 +14,14 @@
 The html template is a regular html file with a single line comment where the
 markdown is included.
 
-    <html>
-    <head />
-    <body>
-    <!-- MarkdownInclude: README.md -->
-    </body>
-    </html>
+````html
+<html>
+<head />
+<body>
+<!-- MarkdownInclude: README.md -->
+</body>
+</html>
+````
 
 This looks for the file `README.md` in the current directory and replaces the comment with includes the generated html fragment.
 
