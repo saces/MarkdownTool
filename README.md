@@ -2,12 +2,12 @@
 
 *A simple tool for generating html files from (github flavored) markdown.*
 
-## How to build
+## Build Instructions
 
-- get the source
-- run ant
+- Get the source
+- Run `ant`
 
-## how to use
+## Usage
 
 ### html template
 
