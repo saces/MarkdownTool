@@ -27,6 +27,24 @@
     <property name="asm-all.jar" value="asm-all-${asm-all.version}.jar" />
     <property name="asm-all.url" value="http://central.maven.org/maven2/org/ow2/asm/asm-all/${asm-all.version}/${asm-all.jar}" />
 
+    <exec executable="git"
+        failifexecutionfails="false"
+        errorProperty="git.errror"
+        outputproperty="git.describe"
+        resultproperty="git.result">
+        <arg value="describe" />
+        <arg value="--always" />
+        <arg value="--abbrev=4" />
+        <arg value="--dirty" />
+    </exec>
+
+    <condition property="git.revision" value="${git.describe}" else="@unknown@">
+        <and>
+            <equals arg1="${git.result}" arg2="0" />
+            <isset property="git.describe" />
+        </and>
+    </condition>
+
     <target name="mkdir">
         <mkdir dir="${build}"/>
         <mkdir dir="${dist}"/>
@@ -41,16 +59,31 @@
     </target>
 
     <target name="compile" depends="libs">
-        <javac srcdir="src/" destdir="${build}" debug="on" optimize="on" source="${source-version}" target="${target-version}">
+        <!-- Create the Version file with patched revision number in ${build} -->
+        <copy file="${src}/${version.src}" tofile="${build}/${version.src}" overwrite="true" />
+        <delete file="${build}/${version.build}" quiet="true" />
+        <replace file="${build}/${version.src}">
+            <replacefilter token="@custom@" value="${git.revision}"/>
+        </replace>
+        <echo message="Updated build version to ${git.revision} in ${build}/${version.src}"/>
+
+        <!-- Force compile of Version.java in case compile of ${src} didn't trigger it -->
+        <javac srcdir="${build}" destdir="${build}" debug="on" optimize="on" source="${source-version}" target="${target-version}" includeantruntime="false">
+            <include name="${version.src}"/>
+        </javac>
+
+        <javac srcdir="src/" destdir="${build}" debug="on" optimize="on" source="${source-version}" target="${target-version}" includeantruntime="false">
             <classpath>
                 <pathelement location="${lib.dir}/${pegdown.jar}"/>
                 <pathelement location="${lib.dir}/${parboiled-java.jar}"/>
             </classpath>
             <include name="**/*.java"/>
+            <exclude name="**/*Test.java"/>
+            <exclude name="${version.src}"/>
         </javac>
     </target>
 
-    <target name="dist" depends="compile"
+    <target name="dist" depends="clean, compile"
         description="generate the distribution" >
         <jar jarfile="${dist}/${jarname}" filesetmanifest="skip">
             <manifest>
